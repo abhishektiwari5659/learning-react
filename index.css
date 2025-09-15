@@ -28,6 +28,11 @@
   transition: color 0.2s ease-in-out;
 }
 
+.nav-items ul li a {
+  text-decoration: none;   /* removes underline */
+  color: inherit;          /* optional: keeps same text color as parent */
+}
+
 .nav-items ul li:hover {
   color: #29f1c9;
 }

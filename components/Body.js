@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import ResCard from "./ResCard";
 import ShimmerCard from "./ShimmerCard";
 import { useNavigate } from "react-router-dom";
+import useStatus from "../utils/useStatus";
 
 const Body = () => {
   const [restaurants, setRestaurants] = useState([]);
@@ -12,6 +13,7 @@ const Body = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
+
 
   useEffect(() => {
     fetchRestaurants();
@@ -55,6 +57,9 @@ const Body = () => {
     );
     setFilteredRestaurants(filtered);
   };
+
+  const onlineStatus = useStatus();
+  if(onlineStatus === false) return <h1>Looks like you don't have an active internet connection</h1>
 
   if (loading) {
     return (
