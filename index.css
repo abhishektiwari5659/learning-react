@@ -1,4 +1,6 @@
-/* === Header Section === */
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+
 .header {
   display: flex;
   justify-content: space-between;
