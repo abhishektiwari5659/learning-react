@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useStatus from "../utils/useStatus";
+import { useSelector } from "react-redux";
 
 export const Header = () => {
     const onlineStatus = useStatus();
     const [btn, setBtn] = useState("login");
+
+    const cartItems = useSelector((store) => store.cart.items)
     return (
         <div className="header">
             <div className="logo-con">
@@ -20,6 +23,7 @@ export const Header = () => {
                     <li>Internet connection {onlineStatus ? "✅" : "🔴"}</li>
                     <li> <Link to={"/"}>Home</Link></li>
                     <li><Link to={"/contact"}>Contact</Link></li>
+                    <li><Link to={"/cart"}>Cart ({cartItems.length} - items)</Link></li>
                     <li><Link to={"/about"}>About</Link></li>
                     <button onClick={
                         () => {

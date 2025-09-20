@@ -2,15 +2,23 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 import useResMenu from "../utils/useResMenu";
+import { useDispatch } from "react-redux";
+import { addItems } from "../utils/cartSlice";
 
 const ResMenuPage = () => {
   const { id } = useParams();
   const { restaurant, menu, loading, error } = useResMenu(id);
   const [openCategory, setOpenCategory] = useState(null);
+  const dispatch = useDispatch();
+  const handleAdd = (item) => {
+    dispatch(addItems(item));
+  }
+
+
 
   if (loading) return <p className="loading">Loading menu...</p>;
   if (error) return <p className="error">{error}</p>;
-
+  
   return (
     <div className="menu-container">
       <Link to="/" className="back-link">
@@ -73,7 +81,7 @@ const ResMenuPage = () => {
                         />
                       )}
 
-                      <button className="add-btn">+ Add</button>
+                      <button className="add-btn" onClick={() => handleAdd(item)}>+ Add</button>
                     </li>
                   ))}
                 </ul>
