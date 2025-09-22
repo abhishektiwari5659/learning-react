@@ -15,7 +15,7 @@ const Cart = () => {
       <ul className="cart-list">
         {cartItems.map((item) => (
           <li key={item.id} className="cart-item">
-            {/* Product Image */}
+          
             {item.imageId && (
               <img
                 src={`https://media-assets.swiggy.com/swiggy/image/upload/${item.imageId}`}
@@ -24,7 +24,6 @@ const Cart = () => {
               />
             )}
 
-            {/* Item Info */}
             <div className="cart-item-info">
               <h3>{item.name}</h3>
               <p className="cart-item-price">
@@ -35,7 +34,7 @@ const Cart = () => {
               )}
             </div>
 
-            {/* Remove Button */}
+         
             <button
               className="remove-btn"
               onClick={() => dispatch(removeItem(item.id))}
@@ -46,7 +45,7 @@ const Cart = () => {
         ))}
       </ul>
 
-      {/* Total */}
+     
       <h3 className="cart-total">
         Total: ₹
         {cartItems.reduce(
@@ -58,7 +57,7 @@ const Cart = () => {
       </h3>
 
       <button className="clear-btn" onClick={() => dispatch(clearCart())}>
-        🗑️ Clear Cart
+       Clear Cart
       </button>
     </div>
   );
