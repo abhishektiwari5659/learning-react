@@ -1,14 +1,15 @@
+require("dotenv").config(); // Load .env file first
 const express = require("express");
 const cors = require("cors");
 
-// Node-fetch dynamic import for CommonJS
+// Dynamic import for node-fetch (for CommonJS)
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 const app = express();
 app.use(cors());
 
-// Map location to lat/lng
+// ✅ Location map for quick lookup
 const locationMap = {
   Delhi: { lat: 28.7041, lng: 77.1025 },
   Mumbai: { lat: 19.076, lng: 72.8777 },
@@ -22,7 +23,9 @@ app.get("/api/restaurants", async (req, res) => {
   try {
     const location = req.query.location || "Delhi";
     const coords = locationMap[location] || locationMap["Delhi"];
-    const url = `https://www.swiggy.com/dapi/restaurants/list/v5?lat=${coords.lat}&lng=${coords.lng}&page_type=DESKTOP_WEB_LISTING`;
+
+    const baseUrl = process.env.LOCATION_API_BASE;
+    const url = `${baseUrl}?lat=${coords.lat}&lng=${coords.lng}&page_type=DESKTOP_WEB_LISTING`;
 
     const response = await fetch(url, {
       headers: {
@@ -32,10 +35,12 @@ app.get("/api/restaurants", async (req, res) => {
       },
     });
 
-    if (!response.ok) throw new Error(`Swiggy API error: ${response.status}`);
+    if (!response.ok)
+      throw new Error(`Swiggy API error: ${response.status}`);
+
     const data = await response.json();
 
-    // Extract restaurants list
+    // Extract restaurant cards safely
     const cards = data?.data?.cards || [];
     const restaurantCard = cards.find(
       (c) => c?.card?.card?.gridElements?.infoWithStyle?.restaurants
@@ -44,23 +49,21 @@ app.get("/api/restaurants", async (req, res) => {
     let resList =
       restaurantCard?.card?.card?.gridElements?.infoWithStyle?.restaurants || [];
 
-    // Normalize price fields
+    // Normalize data
     resList = resList.map((r) => {
-      const info = r.info;
-      let costForTwo = info.costForTwo || 0;
-      let priceMessage = info.costForTwoMessage || "N/A";
-
-      // If costForTwo is 0, fallback to costForTwoMessage or feeDetails
-      if (!costForTwo && info.feeDetails?.restaurantFee?.displayString) {
-        priceMessage = info.feeDetails.restaurantFee.displayString;
-      }
+      const info = r.info || {};
+      const costForTwo = info.costForTwo || 0;
+      const costForTwoMessage =
+        info.costForTwoMessage ||
+        info.feeDetails?.restaurantFee?.displayString ||
+        "N/A";
 
       return {
         ...r,
         info: {
           ...info,
           costForTwo,
-          costForTwoMessage: priceMessage,
+          costForTwoMessage,
         },
       };
     });
@@ -72,11 +75,14 @@ app.get("/api/restaurants", async (req, res) => {
   }
 });
 
-// ✅ Existing menu route
+// ✅ Fetch specific restaurant menu
 app.get("/api/menu/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const url = `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=28.7041&lng=77.1025&restaurantId=${id}`;
+    const baseUrl = process.env.MENU_API_BASE;
+
+    // You can change lat/lng dynamically if needed
+    const url = `${baseUrl}?page-type=REGULAR_MENU&complete-menu=true&lat=28.7041&lng=77.1025&restaurantId=${id}`;
 
     const response = await fetch(url, {
       headers: {
@@ -86,7 +92,9 @@ app.get("/api/menu/:id", async (req, res) => {
       },
     });
 
-    if (!response.ok) throw new Error(`Swiggy API error: ${response.status}`);
+    if (!response.ok)
+      throw new Error(`Swiggy API error: ${response.status}`);
+
     const data = await response.json();
     res.json(data);
   } catch (err) {
@@ -95,4 +103,6 @@ app.get("/api/menu/:id", async (req, res) => {
   }
 });
 
-app.listen(5000, () => console.log("✅ Backend running on port 5000"));
+// ✅ Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`✅ Backend running on port ${PORT}`));
