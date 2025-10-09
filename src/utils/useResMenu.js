@@ -1,5 +1,6 @@
-
 import { useState, useEffect } from "react";
+
+const BACKEND_URL = process.env.BACKEND_URL; // Use env variable
 
 const useResMenu = (id) => {
   const [restaurant, setRestaurant] = useState(null);
@@ -25,9 +26,7 @@ const useResMenu = (id) => {
           } else if (card?.groupedCard?.cardGroupMap?.REGULAR?.cards) {
             traverse(card.groupedCard.cardGroupMap.REGULAR.cards);
           }
-        } catch {
-      
-        }
+        } catch {}
       });
     };
 
@@ -41,7 +40,9 @@ const useResMenu = (id) => {
       setError(null);
 
       try {
-        const response = await fetch(`http://localhost:5000/api/menu/${id}`);
+        const response = await fetch(`${BACKEND_URL}/api/menu/${id}`);
+        if (!response.ok) throw new Error("Failed to fetch menu");
+
         const json = await response.json();
 
         const restInfoCard = json.data.cards.find(

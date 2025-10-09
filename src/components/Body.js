@@ -3,6 +3,8 @@ import ResCard from "./ResCard";
 import { useNavigate } from "react-router-dom";
 import useStatus from "../utils/useStatus";
 
+const BACKEND_URL = process.env.BACKEND_URL; // Use env variable
+
 const ShimmerCard = () => (
   <div className="animate-pulse bg-white rounded-lg shadow-md p-4 flex flex-col gap-2">
     <div className="bg-gray-300 h-32 w-full rounded-md"></div>
@@ -23,18 +25,19 @@ const Body = () => {
 
   useEffect(() => {
     fetchRestaurants();
-  }, [location]); // refetch when location changes
+  }, [location]);
 
   const fetchRestaurants = async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/restaurants?location=${location}`
+        `${BACKEND_URL}/api/restaurants?location=${location}`
       );
       if (!response.ok) throw new Error("Failed to fetch from backend");
       const resList = await response.json();
       setRestaurants(resList);
       setFilteredRestaurants(resList);
+      setError(null);
     } catch (err) {
       console.error("Error fetching restaurants:", err);
       setError("Failed to load restaurants. Please try again later.");
@@ -72,33 +75,29 @@ const Body = () => {
     <div className="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Location + Search */}
       <div className="flex flex-col sm:flex-row items-center gap-3 mb-6 w-full">
-  {/* Location Input */}
-  <input
-    type="text"
-    placeholder="Enter your city or location"
-    onChange={(e) => setLocation(e.target.value)}
-    className="w-full sm:w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm placeholder-gray-400 transition"
-  />
+        <input
+          type="text"
+          placeholder="Enter your city or location"
+          onChange={(e) => setLocation(e.target.value)}
+          className="w-full sm:w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm placeholder-gray-400 transition"
+        />
 
-  {/* Search Input */}
-  <input
-    type="text"
-    placeholder="Search restaurants..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-    className="flex-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm placeholder-gray-400 transition"
-  />
+        <input
+          type="text"
+          placeholder="Search restaurants..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          className="flex-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm placeholder-gray-400 transition"
+        />
 
-  {/* Search Button */}
-  <button
-    onClick={handleSearch}
-    className="px-5 py-2 bg-orange-500 text-white font-semibold rounded-lg shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-300"
-  >
-    Search
-  </button>
-</div>
-
+        <button
+          onClick={handleSearch}
+          className="px-5 py-2 bg-orange-500 text-white font-semibold rounded-lg shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-300"
+        >
+          Search
+        </button>
+      </div>
 
       {/* Restaurants grid */}
       {loading ? (
