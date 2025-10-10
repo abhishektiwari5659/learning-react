@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 
-const BACKEND_URL = process.env.BACKEND_URL; // Use env variable
+const isLocal = window.location.hostname === "localhost";
+const BACKEND_URL = isLocal
+  ? process.env.PARCEL_BACKEND_URL || "http://localhost:5000"
+  : process.env.RENDER_BACKEND_URL || "https://backend-a1s4.onrender.com";
+
+
 
 const useResMenu = (id) => {
   const [restaurant, setRestaurant] = useState(null);

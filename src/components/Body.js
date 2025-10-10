@@ -3,7 +3,11 @@ import ResCard from "./ResCard";
 import { useNavigate } from "react-router-dom";
 import useStatus from "../utils/useStatus";
 
-const BACKEND_URL = process.env.BACKEND_URL; // Use env variable
+const isLocal = window.location.hostname === "localhost";
+const BACKEND_URL = isLocal
+  ? process.env.PARCEL_BACKEND_URL || "http://localhost:5000"
+  : process.env.RENDER_BACKEND_URL || "https://backend-a1s4.onrender.com";
+
 
 const ShimmerCard = () => (
   <div className="animate-pulse bg-white rounded-lg shadow-md p-4 flex flex-col gap-2">
