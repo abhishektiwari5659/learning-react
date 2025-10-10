@@ -4,3 +4,4 @@
 /coverage
 .env
 .vercel
+/backend/node_modules
